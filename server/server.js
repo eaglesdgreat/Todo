@@ -8,6 +8,7 @@ const path = require('path')
 
 const config = require('./config')
 const errorHandler = require('./_helpers/error.handler')
+const userRoutes = require('./routes/user.routes')
 
 // Initialize Express App
 const app = express()
@@ -32,13 +33,16 @@ app.use(logger())
 // static files loading
 app.use('/public', express.static(path.join(__dirname, 'public')))
 
+// Setting router endpoint with express
+app.use('/', userRoutes)
+
 // loading langing page view
 app.get('/', (req, res) => {
   res.send('Building My todo app')
 })
 
 // error handler
-app.use(errorHandler())
+app.use(errorHandler)
 
 // listinging and loading server app
 app.listen(config.port, (err) => {

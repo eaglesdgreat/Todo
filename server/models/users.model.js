@@ -16,17 +16,20 @@ const UserSchema = new mongoose.Schema({
   email: {
     type: String,
     required: 'Email is requied',
-    trime: true,
+    trim: true,
+    unique: true,
+    match: [/.+\@.+\..+/, 'Please fill a valid email address'],
   },
   hashed_password: {
     type: String,
     trim: true,
   },
+  salt : { type: String, trim: true },
   created: {
     type: Date,
     default: Date.now,
   },
-  update: Date,
+  updated: Date,
 })
 
 // creating a virtual field for password protection and authentication
@@ -34,30 +37,37 @@ UserSchema
   .virtual('password')
   .set(function (password) {
     this._password = password
-    this.hashed_password = this.encryptPasssword(password)
+    this.salt = this.makeSalt()
+    this.hashed_password = this.encryptPassword(password)
   })
   .get(function () {
     return this._password
   })
 
 // Defining Methods to authenticate and encrypt password
-UserSchema.method = {
+UserSchema.methods = {
   authenticate: function (plainText) {
-    return bcrypt.compare(plainText, this.hashed_password, function (err, result) {
-      if (err) { console.log(err) }
-      return result
-    })
+    // const text = this.encryptPassword(plainText)
+    // return bcrypt.compare(plainText, this.hashed_password, function (err, result) {
+    //   if (err) { console.log(err) }
+    //   return result
+    // })
+    return this.encryptPassword(plainText) === this.hashed_password
   },
 
-  encryptPasssword: function (password) {
+  encryptPassword: function (password) {
     if (!password) return ''
     try {
       bcrypt.hash(password, 10, function () {
-        console.log('Done')
+        return ''
       })
     } catch (err) {
       return err
     }
+  },
+
+  makeSalt: function () {
+    return Math.round((new Date().valueOf() * Math.random())) + ''
   }
 } 
 

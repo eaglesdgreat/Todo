@@ -1,8 +1,6 @@
-const errorHandler = require("../../../parsnip/server/_helpers/error.handler");
+module.exports = errorHandler
 
-module.export = errorHandler
-
-function errorHandler (err, req, res, next) {
+function errorHandler(err, req, res, next) {
   switch (true) {
     case typeof err === 'string':
       // custom application error
