@@ -4,8 +4,7 @@ const Role = require('./../_helpers/role')
 
 function createUser(req, res) {
   const user = new User(req.body)
-  const isFirst = User.findOne({ $where: { role: 'Admin' } }) === Role.Admin
-  console.log(isFirst)
+  const isFirst = User.findOne({ role: 'Admin' })
   user.role = !isFirst ? Role.Admin : Role.User
   user.save((err, result) => {
     if (err) {
@@ -47,10 +46,9 @@ function readUser(req, res) {
 
 function updateUser(req, res) {
   let user = req.profile
-  // const check = User.findOne({ role: Role.Admin || req.profile.role })
-  if (!(req.profile.role === Role.Admin) || !req.profile.role) {
-    console.log('You are unauthorized to update this account')
-    return ''
+  const check = User.findOne({ role: Role.Admin || req.profile.role })
+  if (!check) {
+    return res.status(403).json({error: 'User not authorized'})
   }
   user = _.extend(user, req.body)
   user.updated = Date.now()
@@ -66,6 +64,10 @@ function updateUser(req, res) {
 
 function removeUser(req, res) {
   const user = req.profile
+  const check = User.findOne({ role: Role.Admin || req.profile.role })
+  if (!check) {
+    return res.status(403).json({error: 'User not authorized'})
+  }
   user.remove((err, user) => {
     if (err) {
       res.status(401).json({ error: `${err} cannot delete account`})

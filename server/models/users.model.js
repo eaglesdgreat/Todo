@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
+const crypto = require('crypto')
 
 // Creating model schemas
 const UserSchema = new mongoose.Schema({
@@ -47,20 +47,16 @@ UserSchema
 // Defining Methods to authenticate and encrypt password
 UserSchema.methods = {
   authenticate: function (plainText) {
-    // const text = this.encryptPassword(plainText)
-    // return bcrypt.compare(plainText, this.hashed_password, function (err, result) {
-    //   if (err) { console.log(err) }
-    //   return result
-    // })
     return this.encryptPassword(plainText) === this.hashed_password
   },
 
   encryptPassword: function (password) {
     if (!password) return ''
     try {
-      bcrypt.hash(password, 10, function () {
-        return ''
-      })
+      return crypto
+        .createHmac('sha1', this.salt)
+        .update(password)
+        .digest('hex')
     } catch (err) {
       return err
     }
@@ -83,4 +79,4 @@ UserSchema.path('hashed_password')
     }
   })
 
-  module.exports = mongoose.model('User', UserSchema)
+module.exports = mongoose.model('User', UserSchema)

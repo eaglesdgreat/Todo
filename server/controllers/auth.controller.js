@@ -11,6 +11,11 @@ function signIn(req, res) {
       return res.status(401).json({ error: `${err} email do not exist`})
     }
 
+    // To check if user enter a password
+    if (!req.body.password) {
+      return res.status(401).json({ error: 'Enter a password to login'})
+    }
+
     // Verify and validate password using authenticate method
     if(!user.authenticate(req.body.password)) {
       return res.status(401).json({ error: 'Email and passowrd do not match'})
@@ -47,7 +52,7 @@ const requiredSignIn = expressJwt({
 // updated and deleted and has authorization to the account being updated
 // and deleted before allow CRUD to proceed
 function hasAuthorization(req, res, next) {
-  const authorized = req.profile && req.auth && req.profile._id === req.auth._id
+  const authorized = req.profile && req.auth && req.profile._id == req.auth._id
   if (!authorized) {
     return res.status(403).json({ error: 'User is not authorized for this account'})
   }

@@ -9,6 +9,7 @@ const path = require('path')
 const config = require('./config')
 const errorHandler = require('./_helpers/error.handler')
 const userRoutes = require('./routes/user.routes')
+const listRoutes = require('./routes/list.routes')
 
 // Initialize Express App
 const app = express()
@@ -35,6 +36,7 @@ app.use('/public', express.static(path.join(__dirname, 'public')))
 
 // Setting router endpoint with express
 app.use('/', userRoutes)
+app.use('/', listRoutes)
 
 // loading langing page view
 app.get('/', (req, res) => {
