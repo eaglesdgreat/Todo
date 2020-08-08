@@ -5,20 +5,26 @@ const User = require('./../models/users.model')
 const config = require('./../config')
 
 function signIn(req, res) {
+  // If user failed to enter email
+  if (!req.body.email) {
+    return res.status(401).json({ error: `Enter a valid Email`})
+  }
+
+  // To check if user enter a password
+  if (!req.body.password) {
+    return res.status(401).json({ error: 'Enter Email and Password to login'})
+  }
+
+
   User.findOne({ email: req.body.email }, (err, user) => {
     // If error in finding user email
-    if (err || !user) {
-      return res.status(401).json({ error: `${err} email do not exist`})
-    }
-
-    // To check if user enter a password
-    if (!req.body.password) {
-      return res.status(401).json({ error: 'Enter a password to login'})
+    if (err || user === null) {
+      return res.status(401).json({ error: `Email not registered Or wrong email input`})
     }
 
     // Verify and validate password using authenticate method
     if(!user.authenticate(req.body.password)) {
-      return res.status(401).json({ error: 'Email and passowrd do not match'})
+      return res.status(401).json({ error: 'Email and Passowrd do not match'})
     }
 
     // generate token using jwt sign with id and secret key
@@ -26,7 +32,7 @@ function signIn(req, res) {
       _id: user._id
     }, config.jwtSecret)
 
-    // 
+    // Store token and user data in Json
     return res.json({
       token,
       user: {

@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 
 import './Login.css'
 import avatar from './../../static/avatar.png'
+import { signin } from './api.users'
+import { authenticate } from './../auth/auth.helper'
 
 class Login extends Component {
   constructor(props) {
@@ -11,6 +13,7 @@ class Login extends Component {
       email: '',
       password: '',
       error: '',
+      redirectTo: false,
     }
     this.handleChange = this.handleChange.bind(this)
     this.clickSubmit = this.clickSubmit.bind(this)
@@ -31,23 +34,37 @@ class Login extends Component {
   clickSubmit(e) {
     e.preventDefault()
     const { email, password } = this.state
-    user = {
-      email: email || undefined,
-      password :password || undefined
+    const user = {
+      email,
+      password,
     }
+    signin(user).then((data) => {
+      if (data.error) {
+        this.setState({ error: data.error })
+      } else {
+        authenticate(data, () => {
+          this.setState({ redirectTo: true, error: '' })
+        })
+      }
+    })
   }
 
   render() {
-    const { email, password, error } = this.state
+    const { email, password, error, redirectTo } = this.state
+    if (redirectTo) {
+      return (
+        <Redirect to='/list' />
+      )
+    }
     return (
-      <section class="popup-graybox">
-        <div class="ebook-popup-sec">
+      <section className="popup-graybox">
+        <div className="ebook-popup-sec">
           <img src={avatar} alt="Avatar" />
           <h2 data-edit="text">Login to Todo</h2>
           <h3 data-edit="text">
             Login to your Todo list a nd start adding your tasks for completion.
           </h3>
-          <div class="ebook-email-sec">
+          <div className="ebook-email-sec">
             <input
               name="email"
               type="email"
@@ -55,6 +72,7 @@ class Login extends Component {
               placeholder="Enter User Name"
               required
               value={email}
+              autoFocus
               onChange={this.handleChange}
             />
             <input
@@ -71,7 +89,14 @@ class Login extends Component {
             </button>
             <button className="ebook-cls-btn close-btn">X</button>
           </div>
+          <br />
+          {error && (
+            <p style={{ color: 'red' }}>
+              {error}
+            </p>
+          )}
         </div>
+        <br />
         <h5>
           Not Registered?
           <Link to="/register">
