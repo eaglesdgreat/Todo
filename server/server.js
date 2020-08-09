@@ -7,7 +7,6 @@ const logger = require('compression')
 const path = require('path')
 
 const config = require('./config')
-const errorHandler = require('./_helpers/error.handler')
 const userRoutes = require('./routes/user.routes')
 const listRoutes = require('./routes/list.routes')
 
@@ -43,8 +42,14 @@ app.get('/', (req, res) => {
   res.send('Building My todo app')
 })
 
-// error handler
-app.use(errorHandler)
+// Unauthorizaton error handler
+app.use((err, req, res, next) => {
+  if (err.name === 'UnauthorizedError') {
+    return res.status(401).json({
+      error: `${err.name}: ${err.message}`
+    })
+  }
+})
 
 // listinging and loading server app
 app.listen(config.port, (err) => {
