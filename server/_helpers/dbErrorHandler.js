@@ -1,4 +1,4 @@
-const getUniqueErrorMessage = (err) => {
+function getUniqueErrorMessage(err) {
   let output
   try {
     const fieldName = err.message.substring(err.message.lastIndexOf('.$') + 2, err.message.lastIndexOf('_1'))
@@ -9,7 +9,7 @@ const getUniqueErrorMessage = (err) => {
   return output
 }
 
-const getErrorMessage = (err) => {
+function getErrorMessage(err) {
   let message = ''
   if (err.code) {
     switch (err.code) {
@@ -29,6 +29,6 @@ const getErrorMessage = (err) => {
   return message
 }
 
-export default {
+module.exports = {
   getErrorMessage,
 }
