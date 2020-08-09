@@ -91,6 +91,7 @@ class Register extends Component {
               className="ebookemail-input1"
               placeholder="Enter Password"
               required
+              fullWidth
               value={user.password}
               onChange={this.handleChange}
             />
