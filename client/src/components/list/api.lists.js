@@ -78,6 +78,23 @@ function createTask(params, credentials, userId, task) {
   .catch(err => { console.log(err) })
 }
 
+function getTask(params, credentials, taskId) {
+  return fetch(`/api/list/task/${params.listId}`, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${credentials.t}`,
+    },
+    body: JSON.stringify({
+      listId: params.listId,
+      taskId
+    })
+  })
+    .then((res) => { return res.json() })
+    .catch((err) => console.log(err))
+}
+
 function updateTask(params, credentials, taskId, task) {
   return fetch(`/api/list/update/task/${params.listId}`, {
     method: 'PUT',
@@ -118,4 +135,5 @@ export {
   updateTask,
   allListsByUser,
   getlist,
+  getTask,
 }
