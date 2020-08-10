@@ -1,6 +1,8 @@
 const _ = require('lodash')
+
 const User = require('./../models/users.model')
 const Role = require('./../_helpers/role')
+const { getErrorMessage } = require('./../_helpers/dbErrorHandler')
 
 function createUser(req, res) {
   const user = new User(req.body)
@@ -8,7 +10,7 @@ function createUser(req, res) {
   user.role = !isFirst ? Role.Admin : Role.User
   user.save((err, result) => {
     if (err) {
-      return res.status(401).json({ error: `${err} cannot create account` })
+      return res.status(401).json({ error: getErrorMessage(err) })
     }
     return res.status(200).json({
       message: `Welcome ${result.name} your account is created`
@@ -19,7 +21,7 @@ function createUser(req, res) {
 function listUsers(req, res) {
   User.find((err, users) => {
     if (err) {
-      return res.status(401).json({ error: err })
+      return res.status(401).json({ error: getErrorMessage(err) })
     }
     return res.status(200).json(users)
   }).select('name email role created updated')
@@ -29,7 +31,7 @@ function userById(req, res, next, id) {
   User.findById({ _id: id })
     .exec((err, user) => {
       if (err || !user) {
-        return res.status(404).json({ error: err })
+        return res.status(404).json({ error: 'User not found '})
       }
       req.profile = user
       next()
@@ -54,7 +56,7 @@ function updateUser(req, res) {
   user.updated = Date.now()
   user.save((err, result) => {
     if (err) {
-      return res.status(401).json({ error: `${err} cannot update user data`})
+      return res.status(401).json({ error: getErrorMessage(err) })
     }
     result.hashed_password = undefined
     result.salt = undefined
@@ -70,7 +72,7 @@ function removeUser(req, res) {
   }
   user.remove((err, user) => {
     if (err) {
-      res.status(401).json({ error: `${err} cannot delete account`})
+      res.status(401).json({ error: getErrorMessage(err) })
     }
     return res.status(200).json({
       message: 'Account deleted try creating new account'

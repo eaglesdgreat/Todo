@@ -7,7 +7,7 @@ const Auth = require('../controllers/auth.controller')
 const router = express.Router()
 
 router.route('/api/lists/:userId')
-  .get(Auth.requiredSignIn, List.Lists)
+  .get(Auth.requiredSignIn, List.allListByUser)
   .post(Auth.requiredSignIn, List.createList)
 
 router.route('/api/list/:listId')
@@ -15,15 +15,17 @@ router.route('/api/list/:listId')
   .put(Auth.requiredSignIn, List.isOwner, List.updateList)
   .delete(Auth.requiredSignIn, List.isOwner, List.removeList)
 
-router.route('/api/list/by/:userId')
-  .get(Auth.requiredSignIn, List.allListByUser)
+router.route('/api/list')
+  .get(Auth.requiredSignIn, List.Lists)
 
 router.route('api/list/new/task/:listId')
   .put(Auth.requiredSignIn, List.createTask)
 
-router.route('/api/list/task/:listId')
+router.route('/api/list/update/task/:listId')
   .put(Auth.requiredSignIn, List.isOwner, List.updateTask)
-  .delete(Auth.requiredSignIn, List.isOwner, List.removeTask)
+
+router.route('/api/list/delete/task/:listId')
+  .put(Auth.requiredSignIn, List.isOwner, List.removeTask)
 
 router.param('userId', User.userById)
 router.param('listId', List.listById)

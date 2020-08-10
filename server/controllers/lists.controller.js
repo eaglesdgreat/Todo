@@ -98,7 +98,6 @@ function isOwner(req, res, next) {
 }
 
 function createTask(req, res) {
-  console.log(req.body)
   let task = req.body.task
   task.createdBy = req.body.userId
   List.findByIdAndUpdate(req.wall._id, { $push: { tasks: task } }, { new: true } )
@@ -118,6 +117,7 @@ function createTask(req, res) {
 function updateTask(req, res) {
   const task = req.body.taskId
   let match = req.wall.tasks.find(o => o._id === task)
+  match.updated = Date.now()
   match = _.extend(match, req.body.task)
   List.findByIdAndUpdate(
     req.body.listId,
