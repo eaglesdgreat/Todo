@@ -141,6 +141,11 @@ class Lists extends Component {
               )
             })}
           </ul>
+          {error && (
+            <p style={{ color: 'red' }}>
+              {error}
+            </p>
+          )}
         </div>
       </div>
     )
