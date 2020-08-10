@@ -18,8 +18,11 @@ router.route('/api/list/:listId')
 router.route('/api/list')
   .get(Auth.requiredSignIn, List.Lists)
 
-router.route('api/list/new/task/:listId')
+router.route('/api/list/new/task/:listId')
   .put(Auth.requiredSignIn, List.createTask)
+
+router.route('/api/list/task/:listId')
+.put(Auth.requiredSignIn, List.isOwner, List.getTask)
 
 router.route('/api/list/update/task/:listId')
   .put(Auth.requiredSignIn, List.isOwner, List.updateTask)

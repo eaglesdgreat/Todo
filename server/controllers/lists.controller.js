@@ -114,6 +114,18 @@ function createTask(req, res) {
     })
 }
 
+function getTask(req, res) {
+  const task = req.body.taskId
+  List.findOne({ _id: req.body.listId })
+    .select({ tasks: { $elemMatch: { _id: task } } })
+    .exec((err, result) => {
+      if (err) {
+        return res.status(400).json({ error: err })
+      }
+      return res.status(200).json(result)
+    })
+}
+
 function updateTask(req, res) {
   const task = req.body.taskId
   let match = req.wall.tasks.find(o => o._id === task)
@@ -161,4 +173,5 @@ module.exports = {
     createTask,
     updateTask,
     removeTask,
+    getTask,
 }
